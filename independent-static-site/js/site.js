@@ -179,7 +179,7 @@
     backdrop.innerHTML =
       '<div class="w-lightbox-container">' +
       '<div class="w-lightbox-content">' +
-      '<div class="w-lightbox-view w-lightbox-active">' +
+      '<div class="w-lightbox-view">' +
       '<div class="w-lightbox-frame">' +
       '<figure class="w-lightbox-figure">' +
       '<img class="w-lightbox-img w-lightbox-image" src="" alt="">' +
