@@ -107,6 +107,15 @@ html.js .body.is-loaded {
 }
 
 /* ---------- Lightbox ---------- */
+/* webflow.css sets .w-lightbox-view to opacity:0 by default (it expects
+   Webflow's own runtime to crossfade it in) and reserves .w-lightbox-active
+   for dimming a thumbnail-strip item to 30% opacity - not for the main
+   image view. Our lightbox only ever renders one view at a time, so it
+   just needs to be fully visible. */
+.w-lightbox-view {
+  opacity: 1;
+}
+
 .w-lightbox-backdrop {
   display: none;
 }

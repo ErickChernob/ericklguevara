@@ -668,7 +668,7 @@
   font-family: Helveticaneue, sans-serif;
   font-size: 48px;
   line-height: 40px;
-  transition: all .2s ease-in-out;
+  transition: letter-spacing .32s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform .32s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s cubic-bezier(0.12, 0, 0.39, 0), filter 0.5s cubic-bezier(0.12, 0, 0.39, 0) !important;
   position: relative;
   top: auto;
 }
