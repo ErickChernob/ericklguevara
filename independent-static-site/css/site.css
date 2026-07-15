@@ -121,5 +121,24 @@ body.lightbox-open {
 }
 
 .w-lightbox-control {
-  outline: none;
+  cursor: pointer;
+}
+
+/* ---------- Focus-visible styles ----------
+   webflow.css's stock component resets (.w-nav-button:focus, etc.) zero
+   out the outline with no replacement, and the lightbox controls above
+   are plain divs with no default focus indicator at all. Restore a
+   visible, keyboard-only focus ring on every interactive element this
+   site actually uses, without touching mouse/touch interaction styling. */
+.navbar__link:focus-visible,
+.footer__link:focus-visible,
+.button:focus-visible,
+.applink:focus-visible,
+.extrainfo_link:focus-visible,
+.menu-button:focus-visible,
+.w-lightbox-control:focus-visible,
+.project_lightbox_main:focus-visible,
+.info__main__block.project__inportfolio:focus-visible {
+  outline: 2px solid var(--black, #242424);
+  outline-offset: 2px;
 }

@@ -187,9 +187,9 @@
       "</div>" +
       "</div>" +
       "</div>" +
-      '<div class="w-lightbox-control w-lightbox-left" role="button" aria-label="Previous"></div>' +
-      '<div class="w-lightbox-control w-lightbox-right" role="button" aria-label="Next"></div>' +
-      '<div class="w-lightbox-control w-lightbox-close" role="button" aria-label="Close"></div>' +
+      '<div class="w-lightbox-control w-lightbox-left" role="button" aria-label="Previous" tabindex="0"></div>' +
+      '<div class="w-lightbox-control w-lightbox-right" role="button" aria-label="Next" tabindex="0"></div>' +
+      '<div class="w-lightbox-control w-lightbox-close" role="button" aria-label="Close" tabindex="0"></div>' +
       "</div>";
     document.body.appendChild(backdrop);
 
@@ -250,9 +250,21 @@
       });
     });
 
+    function onControlKey(handler) {
+      return function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handler();
+        }
+      };
+    }
+
     closeEl.addEventListener("click", close);
     rightEl.addEventListener("click", next);
     leftEl.addEventListener("click", prev);
+    closeEl.addEventListener("keydown", onControlKey(close));
+    rightEl.addEventListener("keydown", onControlKey(next));
+    leftEl.addEventListener("keydown", onControlKey(prev));
     backdrop.addEventListener("click", function (e) {
       if (e.target === backdrop || e.target === containerEl) close();
     });
