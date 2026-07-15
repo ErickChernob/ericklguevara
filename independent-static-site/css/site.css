@@ -1,0 +1,125 @@
+/*
+ * Custom stylesheet supporting js/site.js.
+ * Loaded after normalize.css / webflow.css / ericklguevara.webflow.css so it
+ * can safely layer new, purely-additive rules on top of them. Nothing in
+ * the three original stylesheets is modified.
+ *
+ * Progressive enhancement: every rule that hides content by default is
+ * scoped under html.js (added by a tiny synchronous script in <head>,
+ * see the page <head> for `document.documentElement.className += ' js'`).
+ * Visitors without JavaScript never get that class, so they see the
+ * fully visible, non-animated page.
+ */
+
+/* ---------- Page-load fade (matches IX2 "PageStart": opacity 0 -> 1, 800ms) ---------- */
+html.js .body {
+  opacity: 0;
+}
+
+html.js .body.is-loaded {
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+/* ---------- Mobile navigation ----------
+   ericklguevara.webflow.css positions .navbar__menu with
+   `position: absolute; inset: 100% 0% 0%`, which is meant to be resolved
+   the way Webflow's own runtime does it (toggling a JS-managed
+   [data-nav-menu-open] state). Combined with this element's own CSS Grid
+   placement (#w-node-...-bafe1db0 { grid-area: 1 / 2 / 2 / 3 }) inside
+   .main__navbar's grid, that percentage-based positioning does not
+   resolve reliably outside Webflow's runtime (verified empirically: it
+   renders the menu at the grid cell's origin, overlapping the header,
+   instead of below it). Overriding to a real second grid row keeps the
+   same full-width collapse/expand panel look without depending on that
+   positioning. */
+@media screen and (max-width: 991px) {
+  .navbar__menu {
+    display: flex !important;
+    position: static !important;
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    flex-direction: column;
+    align-items: flex-start;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+  }
+
+  .navbar__menu.w--open {
+    max-height: 2000px;
+    overflow-y: auto;
+  }
+}
+
+/* No-JS fallback: keep the nav reachable without a working toggle script. */
+@media screen and (max-width: 991px) and (scripting: none) {
+  .navbar__menu {
+    max-height: none !important;
+    position: static !important;
+    overflow: visible !important;
+  }
+
+  .menu-button {
+    display: none !important;
+  }
+}
+
+/* ---------- Divider scroll-reveal (matches IX2 "Divider into view": width 0% -> 100%, 750ms ease-in) ---------- */
+.divider--reveal {
+  width: 0%;
+  transition: width 0.75s cubic-bezier(0.42, 0, 1, 1);
+}
+
+.divider--reveal.is-visible {
+  width: 100%;
+}
+
+/* ---------- Project card / case-study block scroll-reveal ----------
+   Matches IX2 "Project(/Data) Scrolls into View": children fade in and
+   unblur (opacity 0 -> 1, blur 15px -> 0) as the block enters view. */
+.reveal-children > * {
+  opacity: 0;
+  filter: blur(15px);
+  transition: opacity 0.5s cubic-bezier(0.12, 0, 0.39, 0), filter 0.5s cubic-bezier(0.12, 0, 0.39, 0);
+}
+
+.reveal-children.is-revealed > * {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* ---------- Hover scale effects (matches IX2 ProjectHoverIn/Out and PicHoverIn/Out) ---------- */
+.project__mainpic {
+  transition: transform 0.2s ease-in-out;
+}
+
+.project__mainpic:hover {
+  transform: scale(1.05);
+}
+
+.project__secondarypic {
+  transition: transform 0.2s ease-in-out;
+}
+
+.project__secondarypic:hover {
+  transform: scale(1.03);
+}
+
+/* ---------- Lightbox ---------- */
+.w-lightbox-backdrop {
+  display: none;
+}
+
+.w-lightbox-backdrop.is-open {
+  display: block;
+  opacity: 1;
+}
+
+body.lightbox-open {
+  overflow: hidden;
+}
+
+.w-lightbox-control {
+  outline: none;
+}
