@@ -1,14 +1,5 @@
-# Deployment package build output — intentionally not version-controlled.
-#
-# public_html_ready/ is a generated copy of files already tracked
-# elsewhere in this directory (see the *.html, css/, js/, images/, fonts/
-# top-level entries) — committing it would duplicate ~217 MB of binary
-# content already in the repo for no additional information.
-#
 # public_html_ready.zip is ~209 MB, which exceeds GitHub's 100 MB
-# per-file limit and cannot be pushed without Git LFS.
-#
-# Both are reproducible with the copy described in FINAL_QA_REPORT.md
-# §10, or by zipping the contents of public_html_ready/ once rebuilt.
-public_html_ready/
+# per-file limit and cannot be pushed without Git LFS. The uncompressed
+# public_html_ready/ folder is committed directly instead (no individual
+# file inside it exceeds 100 MB) — see FINAL_QA_REPORT.md §10.
 public_html_ready.zip

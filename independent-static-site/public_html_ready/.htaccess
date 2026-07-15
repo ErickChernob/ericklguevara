@@ -1,0 +1,108 @@
+# ericklguevara.com - Apache configuration
+# Plain static site: HTML/CSS/JS/images/fonts only, no build step required.
+
+# ---------------------------------------------------------------------------
+# Prevent directory listing
+# ---------------------------------------------------------------------------
+Options -Indexes
+
+# ---------------------------------------------------------------------------
+# Custom error page
+# ---------------------------------------------------------------------------
+ErrorDocument 404 /404.html
+
+# ---------------------------------------------------------------------------
+# Force HTTPS and the non-www host. The site's content and metadata
+# consistently reference "ericklguevara.com" with no "www." prefix (see
+# MIGRATION_NOTES.md / FINAL_QA_REPORT.md) - adjust the RewriteCond below
+# if www should be preferred instead.
+#
+# Deliberately kept as two separate, simple rules rather than one combined
+# regex: this environment has no Apache available to test mod_rewrite
+# behavior against, and a redirect loop is a much worse failure mode than
+# one extra redirect hop for the (uncommon) http://www. case. Each rule
+# below only fires when its own single condition is true and always
+# narrows toward the final https+non-www state, so neither rule can loop
+# back into the other.
+# ---------------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Force non-www first (still on whatever scheme the request came in on)
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+  # Force HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Known old Webflow-hosted paths: none identified in this export (every
+  # internal link already uses the same relative *.html filenames used
+  # here). If search engines have indexed a *.webflow.io URL, or a prior
+  # domain, add explicit 301s here, e.g.:
+  # RewriteCond %{HTTP_HOST} ^ericklguevara\.webflow\.io$ [NC]
+  # RewriteRule ^(.*)$ https://ericklguevara.com/$1 [L,R=301]
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# Protect source/data files that ship alongside the exported site
+# ---------------------------------------------------------------------------
+<FilesMatch "\.(md)$">
+  Require all denied
+</FilesMatch>
+
+# ---------------------------------------------------------------------------
+# Security headers - conservative set that will not block Google Fonts,
+# the Spline iframe embeds, or any same-origin asset. No Content-Security-
+# Policy is set here on purpose: a CSP strict enough to be meaningful needs
+# careful per-directive tuning (script-src, style-src, font-src, frame-src
+# for fonts.googleapis.com / fonts.gstatic.com / my.spline.design) that
+# cannot be safely verified without live testing against the production
+# domain; an untuned CSP is more likely to silently break the Google Fonts
+# request or the Spline embed than to add real protection here.
+# ---------------------------------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  # Allow this site's own pages to be framed only by itself; does not
+  # affect this site embedding the Spline iframe (that's a separate,
+  # outbound direction that X-Frame-Options does not govern).
+  Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# Compression
+# ---------------------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+  AddOutputFilterByType DEFLATE application/json application/xml application/rss+xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+  AddOutputFilterByType DEFLATE font/ttf font/otf application/font-sfnt
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# Browser caching - long cache lifetimes for versioned/rarely-changing
+# assets, short lifetime for HTML so content edits show up promptly.
+# ---------------------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  ExpiresByType font/ttf "access plus 1 year"
+  ExpiresByType font/otf "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|png|jpe?g|svg|ico|ttf|otf|woff2?)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
